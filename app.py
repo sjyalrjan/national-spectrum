@@ -382,4 +382,4 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="footer">NATIONAL SPECTRUMS · DESIGNED & DEVELOPED BY SAJA NAZEL ALARJAN<br><span style="color:#2CA880; font-size:9px;">JOUF UNIVERSITY</span></div>', unsafe_allow_html=True)
+st.markdown('<div class="footer">NATIONAL SPECTRUMS · DESIGNED & DEVELOPED BY SAJA ALARJAN<br><span style="color:#2CA880; font-size:9px;">JOUF UNIVERSITY</span></div>', unsafe_allow_html=True)
