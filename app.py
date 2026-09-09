@@ -74,11 +74,11 @@ T = {
         'sub_quote': 'بصمتك الخاصة · متصلة بالفسيفساء الوطنية',
         'footer': 'NATIONAL SPECTRUMS · DESIGNED & DEVELOPED BY SAJA ALARJAN<br><span style="color:#2CA880; font-size:10px;">JOUF UNIVERSITY</span>',
         'regions': {
-            "المنطقة الشمالية": {"heritage": "السدو", "description": "إيقاعات هندسية مستوحاة من نسيج السدو وطبيعة الصحراء.", "color": "#FF2A6D"},
-            "المنطقة الوسطى": {"heritage": "العمارة النجديّة", "description": "تكوينات هندسية دافئة مستوحاة من الطين والعمارة النجديّة الأصيلة.", "color": "#FFC53D"},
-            "المنطقة الجنوبية": {"heritage": "القط العسيري", "description": "أنماط زاهية ومترابطة مستوحاة من الفن البصري للقط العسيري.", "color": "#00F5D4"},
-            "المنطقة الغربية": {"heritage": "الرواشين والحجاز", "description": "تفاصيل معمارية عمودية مستوحاة من رواشين جدة التاريخية والبحر الأحمر.", "color": "#0066FF"},
-            "المنطقة الشرقية": {"heritage": "واحات النخيل", "description": "تموجات وانسيابات مستوحاة من مياه الخليج وواحات الأحساء.", "color": "#00E676"}
+            "north": {"name": "المنطقة الشمالية", "heritage": "السدو", "description": "إيقاعات هندسية مستوحاة من نسيج السدو وطبيعة الصحراء.", "color": "#FF2A6D"},
+            "central": {"name": "المنطقة الوسطى", "heritage": "العمارة النجديّة", "description": "تكوينات هندسية دافئة مستوحاة من الطين والعمارة النجديّة الأصيلة.", "color": "#FFC53D"},
+            "south": {"name": "المنطقة الجنوبية", "heritage": "القط العسيري", "description": "أنماط زاهية ومترابطة مستوحاة من الفن البصري للقط العسيري.", "color": "#00F5D4"},
+            "west": {"name": "المنطقة الغربية", "heritage": "الرواشين والحجاز", "description": "تفاصيل معمارية عمودية مستوحاة من رواشين جدة التاريخية والبحر الأحمر.", "color": "#0066FF"},
+            "east": {"name": "المنطقة الشرقية", "heritage": "واحات النخيل", "description": "تموجات وانسيابات مستوحاة من مياه الخليج وواحات الأحساء.", "color": "#00E676"}
         }
     },
     'en': {
@@ -117,11 +117,11 @@ T = {
         'sub_quote': 'YOUR TILE · INTEGRATED INTO THE NATIONAL MOSAIC',
         'footer': 'NATIONAL SPECTRUMS · DESIGNED & DEVELOPED BY SAJA ALARJAN<br><span style="color:#2CA880; font-size:10px;">JOUF UNIVERSITY</span>',
         'regions': {
-            "Northern Region": {"heritage": "Sadu Weaving", "description": "Geometric rhythms inspired by Sadu textiles and desert landscapes.", "color": "#FF2A6D"},
-            "Central Region": {"heritage": "Najdi Architecture", "description": "Terracotta geometry inspired by Najdi clay architecture.", "color": "#FFC53D"},
-            "Southern Region": {"heritage": "Al-Qatt Al-Asiri", "description": "Layered geometry inspired by the colorful visual language of Al-Qatt.", "color": "#00F5D4"},
-            "Western Region": {"heritage": "Rawashin & Hejaz", "description": "Vertical structures inspired by Rawashin, old Jeddah and the Red Sea.", "color": "#0066FF"},
-            "Eastern Region": {"heritage": "Palm Oases", "description": "Flowing structures inspired by palms, water and the Eastern oasis.", "color": "#00E676"}
+            "north": {"name": "Northern Region", "heritage": "Sadu Weaving", "description": "Geometric rhythms inspired by Sadu textiles and desert landscapes.", "color": "#FF2A6D"},
+            "central": {"name": "Central Region", "heritage": "Najdi Architecture", "description": "Terracotta geometry inspired by Najdi clay architecture.", "color": "#FFC53D"},
+            "south": {"name": "Southern Region", "heritage": "Al-Qatt Al-Asiri", "description": "Layered geometry inspired by the colorful visual language of Al-Qatt.", "color": "#00F5D4"},
+            "west": {"name": "Western Region", "heritage": "Rawashin & Hejaz", "description": "Vertical structures inspired by Rawashin, old Jeddah and the Red Sea.", "color": "#0066FF"},
+            "east": {"name": "Eastern Region", "heritage": "Palm Oases", "description": "Flowing structures inspired by palms, water and the Eastern oasis.", "color": "#00E676"}
         }
     }
 }
@@ -135,7 +135,6 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Cinzel:wght@500;700&display=swap');
 
-    /* Global Body Font Settings */
     html, body, [class*="css"], .stApp {
         font-family: 'Tajawal', 'Plus Jakarta Sans', -apple-system, sans-serif !important;
         background: radial-gradient(circle at 50% 0%, #0D2C22 0%, #061913 38%, #020907 100%);
@@ -239,7 +238,6 @@ st.markdown("""
         margin-top: 4px;
     }
 
-    /* Streamlit Buttons Styling */
     .stButton>button {
         font-family: 'Tajawal', 'Plus Jakarta Sans', sans-serif !important;
         font-weight: 700 !important;
@@ -306,16 +304,22 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# Region Options & Voice Input
+# Region Options & Voice Input (Fixed Key Mapping)
 # ---------------------------------------------------------
 regions = txt['regions']
-selected_region = st.selectbox(txt['select_region'], list(regions.keys()))
-region_data = regions[selected_region]
+region_keys = list(regions.keys())
+region_options_display = [regions[k]["name"] for k in region_keys]
+
+selected_display = st.selectbox(txt['select_region'], region_options_display)
+
+# Find corresponding key
+selected_key = region_keys[region_options_display.index(selected_display)]
+region_data = regions[selected_key]
 
 st.markdown(
     f"""
     <div style="background: rgba(11, 61, 46, 0.25); border: 1px solid {region_data["color"]}77; border-radius: 16px; padding: 20px; max-width: 850px; margin: 0 auto 20px auto; text-align: center;">
-        <div class="small-label" style="color:{region_data["color"]}; font-weight:800;">{selected_region}</div>
+        <div class="small-label" style="color:{region_data["color"]}; font-weight:800;">{region_data["name"]}</div>
         <h3 style="font-family:'Tajawal', sans-serif; font-weight:700; color:{region_data["color"]}; margin:6px 0 8px 0; font-size:20px;">{region_data["heritage"]}</h3>
         <p style="color:#A3C9BC; font-size:14px; margin:0; font-weight:400;">{region_data["description"]}</p>
     </div>
@@ -359,7 +363,7 @@ if audio_file is not None:
         if st.button(txt['add_btn'], use_container_width=True):
             new_tile = {
                 "id": f"SPECTRUM-{len(st.session_state.museum_tiles)+1:03d}",
-                "region": selected_region,
+                "region": region_data["name"],
                 "color": region_data["color"],
                 "energy": round(avg_energy, 3),
                 "freq": int(avg_frequency),
