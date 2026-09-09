@@ -6,304 +6,379 @@ import os
 import base64
 import streamlit.components.v1 as components
 from datetime import datetime
-from streamlit_mic_recorder import mic_recorder
 
 # ---------------------------------------------------------
-# Page Configuration
+# Page Configuration & Styling
 # ---------------------------------------------------------
 st.set_page_config(
-    page_title="National Spectrum | فسيفساء الطيف الوطني",
+    page_title="National Spectrum Mosaic | المتحف الصوتي الوطني",
     page_icon="",
     layout="wide"
 )
 
-# ---------------------------------------------------------
-# Language State Management
-# ---------------------------------------------------------
-if 'lang' not in st.session_state:
-    st.session_state.lang = 'ar'
-
-# ---------------------------------------------------------
-# Custom Styling & Typography
-# ---------------------------------------------------------
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
-
-    html, body, [class*="css"] {
-        font-family: 'Tajawal', sans-serif;
-        background-color: #080a0c;
-        color: #e2e8f0;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap');
 
     .stApp {
-        background: #080a0c;
+        background: radial-gradient(circle at 50% 0%, #0D2C22 0%, #061913 38%, #020907 100%);
+        color: #F5F3EE;
+        font-family: 'DM Sans', sans-serif;
     }
-
+    .block-container {
+        max-width: 1200px;
+        padding-top: 2rem;
+        padding-bottom: 4rem;
+    }
+    .hero {
+        text-align: center;
+        padding: 20px 0 25px 0;
+    }
+    .hero-kicker {
+        color: #5BA88E;
+        font-size: 11px;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+    }
     .hero-title {
-        font-family: 'Tajawal', sans-serif;
-        font-weight: 900;
-        font-size: 2.8rem;
-        color: #ffffff;
-        text-align: center;
-        margin-top: 10px;
-        margin-bottom: 5px;
+        font-family: 'Playfair Display', serif;
+        font-size: 56px;
+        line-height: 1;
+        font-weight: 400;
+        letter-spacing: -2px;
+        margin: 0;
+        color: #F4F0E8;
     }
-
+    .hero-title span {
+        color: #2CA880;
+    }
     .hero-subtitle {
-        font-family: 'Tajawal', sans-serif;
-        font-size: 1.1rem;
-        color: #94a3b8;
-        text-align: center;
-        margin-bottom: 30px;
+        color: #92B5A8;
+        font-size: 14px;
+        font-weight: 300;
+        letter-spacing: 0.5px;
+        margin-top: 15px;
     }
-
+    .section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 26px;
+        color: #F1EEE7;
+        margin-top: 35px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    .small-label {
+        color: #5BA88E;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+    }
+    .info-box {
+        background: rgba(11, 61, 46, 0.15);
+        border: 1px solid rgba(44, 168, 128, 0.20);
+        border-radius: 16px;
+        padding: 25px;
+        margin: 20px auto;
+        max-width: 850px;
+        text-align: center;
+    }
+    .dna-card {
+        background: rgba(11, 61, 46, 0.22);
+        border: 1px solid rgba(44, 168, 128, 0.25);
+        border-radius: 14px;
+        padding: 16px;
+        text-align: center;
+    }
+    .dna-value {
+        font-size: 20px;
+        font-weight: 500;
+        color: #62CBB0;
+        margin-top: 4px;
+    }
+    .dna-tag {
+        font-size: 11px;
+        color: #92B5A8;
+        margin-top: 2px;
+    }
     .footer {
         text-align: center;
-        padding: 30px 0 10px 0;
-        color: #64748b;
-        font-size: 0.85rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-        margin-top: 50px;
+        color: #436B5E;
+        font-size: 10px;
+        letter-spacing: 3px;
+        padding-top: 40px;
+        line-height: 1.8;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Language Toggle Button Top Right
-col_top1, col_top2 = st.columns([8, 2])
-with col_top2:
-    if st.session_state.lang == 'ar':
-        if st.button("Switch to English"):
-            st.session_state.lang = 'en'
-            st.rerun()
-    else:
-        if st.button("التغيير للغة العربية"):
-            st.session_state.lang = 'ar'
-            st.rerun()
+# ---------------------------------------------------------
+# Data Persistence
+# ---------------------------------------------------------
+DATA_FILE = "museum_mosaic_data.json"
+
+def load_archive():
+    if os.path.exists(DATA_FILE):
+        try:
+            with open(DATA_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except:
+            return []
+    return []
+
+def save_to_archive(entry):
+    archive = load_archive()
+    archive.append(entry)
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(archive, f, ensure_ascii=False, indent=2)
+
+if "museum_tiles" not in st.session_state:
+    st.session_state.museum_tiles = load_archive()
 
 # ---------------------------------------------------------
-# Texts Translation Dictionary
+# Hero & Info Box
 # ---------------------------------------------------------
-T = {
-    'ar': {
-        'title': 'مَتْحَفُ الطَّيْفِ الوَطَنِيِّ',
-        'subtitle': 'تَجْسِيدٌ بَصَرِيٌّ حِسِّيٌّ لِلأَصْوَاتِ وَالنَّبَضَاتِ الوَطَنِيَّةِ',
-        'gift_title': 'أَهْدِ صَوْتَكَ لِلْمَتْحَفِ',
-        'gift_method': 'طريقة إضافة الصوت:',
-        'option_rec': 'تسجيل مباشر',
-        'option_file': 'رفع ملف صوتي',
-        'rec_prompt': 'اضغط لبدء التسجيل الصوتي:',
-        'upload_prompt': 'اختر ملفاً صوتياً (MP3, WAV):',
-        'region_label': 'المنطقة أو الجهة:',
-        'regions': ["الرياض", "مكة المكرمة", "المنطقة الشرقية", "المدينة المنورة", "عسير", "القصيم", "حائل", "تبوك", "الجوف", "جازان", "نجران", "الباحة", "الحدود الشمالية"],
-        'tag_label': 'شعور أو وصف البصمة الصوتية (اختياري):',
-        'tag_ph': 'مثال: اعتزاز، فرحة، نشيد، دعاء...',
-        'submit_btn': 'تجسيد الصوت وحفظه في الفسيفساء',
-        'mosaic_title': 'فسيفساء الطيف الوطني',
-        'mosaic_sub': 'كل بلاطة توثق بصمة صوتية فريدة؛ اضغط على أي بلاطة للاستماع.',
-        'success_msg': 'تم إضافة بصمتك الصوتية بنجاح إلى الفسيفساء الوطنية!',
-        'footer': 'متحف الطيف الوطني - تم التطوير بواسطة سجى العرجان | جامعة الجوف'
-    },
-    'en': {
-        'title': 'NATIONAL SPECTRUM MUSEUM',
-        'subtitle': 'Sensory & Visual Representation of National Voices',
-        'gift_title': 'Gift Your Voice to the Museum',
-        'gift_method': 'Input Method:',
-        'option_rec': 'Live Recording',
-        'option_file': 'Upload Audio File',
-        'rec_prompt': 'Click to record:',
-        'upload_prompt': 'Choose an audio file (MP3, WAV):',
-        'region_label': 'Region / Location:',
-        'regions': ["Riyadh", "Makkah", "Eastern Province", "Madinah", "Asir", "Qassim", "Hail", "Tabuk", "Al-Jouf", "Jazan", "Najran", "Al-Baha", "Northern Borders"],
-        'tag_label': 'Emotion or Tag (Optional):',
-        'tag_ph': 'e.g., Pride, Joy, Chant, Reflection...',
-        'submit_btn': 'Embody Voice & Add to Mosaic',
-        'mosaic_title': 'National Spectrum Mosaic',
-        'mosaic_sub': 'Each tile represents a unique voice print; click any tile to listen.',
-        'success_msg': 'Your voice print has been successfully integrated into the national mosaic!',
-        'footer': 'NATIONAL SPECTRUM - DESIGNED & DEVELOPED BY SAJA ALARJAN | JOUF UNIVERSITY'
-    }
+st.markdown("""
+<div class="hero">
+<div class="hero-kicker">اليوم الوطني 96 · أرشيف ثقافي توليدي</div>
+<div class="hero-title">A Museum<br>Built by <span>Voices.</span></div>
+<div class="hero-subtitle">صوتك يغدو جزءاً لا يتجزأ من الطيف الوطني.</div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="info-box">
+<div class="small-label">الفكرة</div>
+<h3 style="font-family:'Playfair Display'; font-weight:400; margin-top:8px; color:#F4F0E8; font-size:22px;">
+ماذا لو كانت أصواتنا قادرة على تشييد صرح رقمي؟
+</h3>
+<p style="color:#92B5A8; line-height:1.7; font-size:14px; margin-top:12px;">
+تحمل الأصوات بين نبراتها دفء الوطن ونبض أرضه. من رمال الشمال إلى قمم الجنوب، تنسج كل نبرة خيطاً متوهجاً في نسيج وطني حي؛ متحف رقمي تتناغم فيه الأصوات السعودية ككيان واحد.
+</p>
+</div>
+""", unsafe_allow_html=True)
+
+# ---------------------------------------------------------
+# Region Options & Voice Input
+# ---------------------------------------------------------
+regions = {
+    "المنطقة الشمالية": {"heritage": "سدو الصحراء", "description": "إيقاعات هندسية مستوحاة من نسيج السدو وطبيعة الصحراء.", "color": "#FF2A6D"},
+    "المنطقة الوسطى": {"heritage": "العمارة النجديّة", "description": "تكوينات هندسية دافئة مستوحاة من الطين والعمارة النجديّة الأصيلة.", "color": "#FFC53D"},
+    "المنطقة الجنوبية": {"heritage": "القط العسيري", "description": "أنماط زاهية ومترابطة مستوحاة من الفن البصري للقط العسيري.", "color": "#00F5D4"},
+    "المنطقة الغربية": {"heritage": "الرواشين والحيجاز", "description": "تفاصيل معمارية عمودية مستوحاة من رواشين جدة التاريخية والبحر الأحمر.", "color": "#0066FF"},
+    "المنطقة الشرقية": {"heritage": "واحات النخيل", "description": "تموجات وانسيابات مستوحاة من مياه الخليج وواحات الأحساء.", "color": "#00E676"}
 }
 
-txt = T[st.session_state.lang]
+selected_region = st.selectbox("اختر منطقتك", list(regions.keys()))
+region_data = regions[selected_region]
 
-# ---------------------------------------------------------
-# Header Render
-# ---------------------------------------------------------
-st.markdown(f'<div class="hero-title">{txt["title"]}</div>', unsafe_allow_html=True)
-st.markdown(f'<div class="hero-subtitle">{txt["subtitle"]}</div>', unsafe_allow_html=True)
+st.markdown(
+    f"""
+    <div style="background: rgba(11, 61, 46, 0.2); border: 1px solid {region_data["color"]}66; border-radius: 16px; padding: 18px; max-width: 850px; margin: 0 auto 20px auto;">
+    <div class="small-label" style="color:{region_data["color"]};">{selected_region}</div>
+    <h3 style="font-family:'Playfair Display';font-weight:400;color:{region_data["color"]};margin:4px 0;">{region_data["heritage"]}</h3>
+    <p style="color:#81A89B;font-size:13px;margin:0;">{region_data["description"]}</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
-# Data Persistence
-DATA_FILE = "spectrum_data.json"
+st.markdown('<div class="section-title">أهدِ صوتك للمتحف</div>', unsafe_allow_html=True)
 
-def load_data():
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return [
-        {"id": 1, "color": "#F59E0B", "region": "Riyadh", "tag": "Pride", "audio": ""},
-        {"id": 2, "color": "#10B981", "region": "Makkah", "tag": "Peace", "audio": ""},
-        {"id": 3, "color": "#EC4899", "region": "Al-Jouf", "tag": "Heritage", "audio": ""},
-        {"id": 4, "color": "#8B5CF6", "region": "Eastern Province", "tag": "Joy", "audio": ""}
-    ]
+audio_file = st.file_uploader("إدخال الصوت", type=["wav", "mp3", "m4a"], label_visibility="collapsed")
 
-def save_data(data):
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+if audio_file is not None:
+    audio_bytes = audio_file.getvalue()
+    st.audio(audio_file)
+    try:
+        y, sr = librosa.load(audio_file, sr=None, mono=True)
+        rms = librosa.feature.rms(y=y)[0]
+        rms_min, rms_max = np.min(rms), np.max(rms)
+        rms_normalized = ((rms - rms_min) / (rms_max - rms_min + 1e-6))
 
-tiles_data = load_data()
+        spectral_centroid = librosa.feature.spectral_centroid(y=y, sr=sr)[0]
+        tempo_res = librosa.beat.beat_track(y=y, sr=sr)[0]
+        tempo_val = float(tempo_res.item(0)) if isinstance(tempo_res, np.ndarray) and tempo_res.size > 0 else float(tempo_res)
 
-# ---------------------------------------------------------
-# Main Layout
-# ---------------------------------------------------------
-col_input, col_display = st.columns([1, 1], gap="large")
+        avg_energy = float(np.mean(rms_normalized))
+        avg_frequency = float(np.mean(spectral_centroid))
 
-with col_input:
-    st.subheader(txt["gift_title"])
-    
-    input_method = st.radio(
-        txt['gift_method'],
-        [txt['option_rec'], txt['option_file']],
-        horizontal=True
-    )
+        pitch_desc = "طبقة عميقة" if avg_frequency < 500 else ("طبقة متوازنة" if avg_frequency < 1200 else "طبقة رفيعة")
+        energy_desc = "نبرة هادئة" if avg_energy < 0.35 else ("صوت حيوية" if avg_energy < 0.65 else "كثافة عالية")
+        rhythm_desc = "إيقاع منتظم" if tempo_val < 110 else ("إيقاع متسارع" if tempo_val < 150 else "إيقاع سريع")
 
-    audio_bytes = None
+        b64_audio = base64.b64encode(audio_bytes).decode('utf-8')
 
-    if input_method == txt['option_rec']:
-        st.write(txt['rec_prompt'])
-        audio_dict = mic_recorder(
-            start_prompt=("بدء التسجيل" if st.session_state.lang == 'ar' else "Start Recording"),
-            stop_prompt=("إيقاف التسجيل" if st.session_state.lang == 'ar' else "Stop Recording"),
-            key='recorder'
-        )
-        if audio_dict:
-            audio_bytes = audio_dict['bytes']
-            st.audio(audio_bytes, format='audio/wav')
-    else:
-        uploaded_file = st.file_uploader(txt['upload_prompt'], type=['wav', 'mp3', 'm4a', 'ogg'])
-        if uploaded_file is not None:
-            audio_bytes = uploaded_file.read()
-            st.audio(audio_bytes)
+        st.markdown('<div class="section-title">الخصائص الصوتية للبصمة</div>', unsafe_allow_html=True)
+        c1, c2, c3, c4 = st.columns(4)
+        c1.markdown(f'<div class="dna-card"><div class="small-label">التردد</div><div class="dna-value">{int(avg_frequency)} Hz</div><div class="dna-tag">{pitch_desc}</div></div>', unsafe_allow_html=True)
+        c2.markdown(f'<div class="dna-card"><div class="small-label">الطاقة</div><div class="dna-value">{avg_energy:.2f}</div><div class="dna-tag">{energy_desc}</div></div>', unsafe_allow_html=True)
+        c3.markdown(f'<div class="dna-card"><div class="small-label">الإيقاع</div><div class="dna-value">{tempo_val:.0f} BPM</div><div class="dna-tag">{rhythm_desc}</div></div>', unsafe_allow_html=True)
+        c4.markdown(f'<div class="dna-card"><div class="small-label">المدة</div><div class="dna-value">{len(y)/sr:.1f}s</div><div class="dna-tag">تم التسجيل</div></div>', unsafe_allow_html=True)
 
-    region = st.selectbox(txt['region_label'], txt['regions'])
-    tag = st.text_input(txt['tag_label'], placeholder=txt['tag_ph'])
-
-    if st.button(txt['submit_btn'], use_container_width=True, type="primary"):
-        if audio_bytes:
-            try:
-                import io
-                y, sr = librosa.load(io.BytesIO(audio_bytes), duration=5)
-                pitch = float(np.mean(librosa.feature.spectral_centroid(y=y, sr=sr)))
-                energy = float(np.mean(librosa.feature.rms(y=y)))
-                
-                r_val = int(np.clip((pitch / 4000) * 255, 50, 255))
-                g_val = int(np.clip((energy * 10) * 255, 100, 240))
-                b_val = int(np.clip(255 - (r_val / 2), 100, 255))
-                hex_color = f"#{r_val:02x}{g_val:02x}{b_val:02x}"
-            except Exception:
-                hex_color = "#2CA880"
-
-            b64_audio = base64.b64encode(audio_bytes).decode('utf-8')
-            audio_uri = f"data:audio/wav;base64,{b64_audio}"
-
+        if st.button("إضافة بلاطة صوتك إلى الطيف الوطني"):
             new_tile = {
-                "id": len(tiles_data) + 1,
-                "color": hex_color,
-                "region": region,
-                "tag": tag if tag else "National Voice",
-                "audio": audio_uri
+                "id": f"SPECTRUM-{len(st.session_state.museum_tiles)+1:03d}",
+                "region": selected_region,
+                "color": region_data["color"],
+                "energy": round(avg_energy, 3),
+                "freq": int(avg_frequency),
+                "bpm": int(tempo_val),
+                "audio_b64": b64_audio,
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M")
             }
-
-            tiles_data.append(new_tile)
-            save_data(tiles_data)
-            st.success(txt['success_msg'])
+            st.session_state.museum_tiles.append(new_tile)
+            save_to_archive(new_tile)
+            st.success("تم إدراج بصمتك الصوتية في الفسيفساء الوطنية بنجاح!")
             st.rerun()
-        else:
-            st.warning("رجاءً سجل صوتاً أو ارفع ملفاً أولاً!" if st.session_state.lang == 'ar' else "Please record or upload audio first!")
 
-with col_display:
-    st.subheader(txt["mosaic_title"])
-    st.caption(txt['mosaic_sub'])
+    except Exception as e:
+        st.error("حدث خطأ أثناء معالجة الملف الصوتي")
 
-    mosaic_json = json.dumps(tiles_data)
-    
-    html_code = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            .mosaic-grid {{
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
-                gap: 12px;
-                padding: 15px;
-                background: rgba(10, 15, 24, 0.8);
-                border-radius: 14px;
-                border: 1px solid rgba(255,255,255,0.05);
-                max-height: 400px;
-                overflow-y: auto;
-            }}
-            .tile {{
-                width: 100%;
-                height: 65px;
-                border-radius: 12px;
-                cursor: pointer;
-                transition: transform 0.25s ease, box-shadow 0.25s ease;
-                border: 1px solid rgba(255,255,255,0.15);
-            }}
-            .tile:hover {{
-                transform: scale(1.1);
-                box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
-                z-index: 10;
-            }}
-            .tile.playing {{
-                animation: pulse 1.2s infinite alternate;
-                border: 2px solid #FFFFFF;
-            }}
-            @keyframes pulse {{
-                0% {{ transform: scale(1.0); box-shadow: 0 0 10px currentColor; }}
-                100% {{ transform: scale(1.12); box-shadow: 0 0 22px currentColor; }}
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="mosaic-grid" id="grid"></div>
-        <audio id="audioPlayer" style="display:none;"></audio>
-        <div id="info" style="margin-top: 12px; font-family: sans-serif; color: #94A3B8; font-size: 13px; text-align: center;"></div>
+# ---------------------------------------------------------
+# Original Clean Mosaic HTML Grid + Native Click & Audio
+# ---------------------------------------------------------
+st.markdown('<div class="section-title">فسيفساء الطيف الوطني</div>', unsafe_allow_html=True)
 
-        <script>
-            const data = {mosaic_json};
-            const grid = document.getElementById('grid');
-            const player = document.getElementById('audioPlayer');
-            const info = document.getElementById('info');
+archive = st.session_state.museum_tiles
+active_tiles_count = len(archive)
 
-            data.forEach(item => {{
-                const tile = document.createElement('div');
-                tile.className = 'tile';
-                tile.style.backgroundColor = item.color;
-                tile.title = `${{item.region}} - ${{item.tag}}`;
+MIN_SLOTS = 49
+total_slots = max(MIN_SLOTS, int(np.ceil(active_tiles_count / 7.0) * 7)) + 7
 
-                tile.onclick = () => {{
-                    document.querySelectorAll('.tile').forEach(t => t.classList.remove('playing'));
-                    if(item.audio) {{
-                        tile.classList.add('playing');
-                        player.src = item.audio;
-                        player.play();
-                        info.innerHTML = `<b>${{item.region}}</b> | ${{item.tag}}`;
-                    }} else {{
-                        info.innerHTML = `<b>${{item.region}}</b> | ${{item.tag}} (Sample Tile)`;
-                    }}
-                }};
-                grid.appendChild(tile);
-            }});
-        </script>
-    </body>
-    </html>
-    """
-    
-    components.html(html_code, height=450)
+tiles_html_list = []
+for i in range(total_slots):
+    if i < active_tiles_count:
+        t = archive[i]
+        energy = t.get("energy", 0.5)
+        bpm = t.get("bpm", 110)
+        scale = 1.08 + min(energy * 0.25, 0.3)
+        speed = max(0.9, 2.5 - (bpm / 120))
+        glow_radius = int(8 + energy * 25)
+
+        audio_src = f"data:audio/wav;base64,{t.get('audio_b64', '')}" if 'audio_b64' in t else ""
+
+        tiles_html_list.append(f"""
+        <div class="tile active"
+             style="--tile-color: {t['color']}; --wave-scale: {scale:.2f}; --wave-speed: {speed:.2f}s; --glow-radius: {glow_radius}px;"
+             onclick="playTileAudio('{t['id']}', '{audio_src}', this)"
+             title="{t['id']} • {t['region']}&#10;التردد: {t['freq']} Hz">
+        </div>
+        """)
+    else:
+        tiles_html_list.append('<div class="tile empty"></div>')
+
+mosaic_grid_html = "".join(tiles_html_list)
+
+mosaic_component = f"""
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap');
+    body {{
+        margin: 0;
+        background: transparent;
+        font-family: 'DM Sans', sans-serif;
+        color: #F5F3EE;
+    }}
+    .mosaic-box {{
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }}
+    .mosaic-grid {{
+        display: grid;
+        grid-template-columns: repeat(7, 46px);
+        gap: 12px;
+        background: rgba(4, 20, 15, 0.65);
+        border: 1px solid rgba(44, 168, 128, 0.22);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+    }}
+    .tile {{
+        width: 46px;
+        height: 46px;
+        border-radius: 10px;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }}
+    .tile.empty {{
+        background: rgba(44, 168, 128, 0.04);
+        border: 1px dashed rgba(44, 168, 128, 0.12);
+    }}
+    .tile.active {{
+        background-color: var(--tile-color);
+        box-shadow: 0 0 10px var(--tile-color);
+        animation: wavePulse var(--wave-speed) infinite ease-in-out;
+        cursor: pointer;
+    }}
+    .tile.active:hover {{
+        transform: scale(1.15) !important;
+        box-shadow: 0 0 20px var(--tile-color) !important;
+        z-index: 10;
+    }}
+    .tile.playing {{
+        animation: none !important;
+        border: 2px solid #FFFFFF !important;
+        box-shadow: 0 0 25px #FFFFFF !important;
+        transform: scale(1.1) !important;
+    }}
+    @keyframes wavePulse {{
+        0% {{ transform: scale(1); box-shadow: 0 0 6px var(--tile-color); }}
+        50% {{ transform: scale(var(--wave-scale)); box-shadow: 0 0 var(--glow-radius) var(--tile-color); }}
+        100% {{ transform: scale(1); box-shadow: 0 0 6px var(--tile-color); }}
+    }}
+    #status-bar {{
+        text-align: center;
+        margin-top: 15px;
+        font-size: 13px;
+        color: #92B5A8;
+        min-height: 20px;
+    }}
+</style>
+</head>
+<body>
+<div class="mosaic-box">
+    <div class="mosaic-grid">
+        {mosaic_grid_html}
+    </div>
+</div>
+<div id="status-bar"></div>
+<audio id="museum-player" style="display:none;"></audio>
+
+<script>
+function playTileAudio(tileId, audioSrc, element) {{
+    var player = document.getElementById('museum-player');
+    var status = document.getElementById('status-bar');
+
+    // Reset previous playing tiles
+    var activeTiles = document.querySelectorAll('.tile.active');
+    activeTiles.forEach(function(t) {{ t.classList.remove('playing'); }});
+
+    if (audioSrc) {{
+        element.classList.add('playing');
+        player.src = audioSrc;
+        player.play();
+        status.innerHTML = "<b>جاري التشغيل:</b> " + tileId;
+    }}
+}}
+</script>
+</body>
+</html>
+"""
+
+components.html(mosaic_component, height=total_slots * 10 + 200)
 
 # ---------------------------------------------------------
 # Footer
 # ---------------------------------------------------------
-st.markdown(f'<div class="footer">{txt["footer"]}</div>', unsafe_allow_html=True)
+st.markdown("""
+<div style="text-align:center;padding:30px 20px 10px 20px;">
+<div style="font-family:'Playfair Display';font-size:30px;color:#F0ECE5;">صوتٌ واحد تعبير،</div>
+<div style="font-family:'Playfair Display';font-size:30px;color:#2CA880;margin-top:4px;">وآلاف الأصوات تبني أمة.</div>
+<div style="color:#5BA88E;font-size:11px;margin-top:14px;letter-spacing:1px;">بصمتك الخاصة · متصلة بالفسيفساء الوطنية</div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown('<div class="footer">NATIONAL SPECTRUMS · DESIGNED & DEVELOPED BY SAJA ALARJAN<br><span style="color:#2CA880; font-size:9px;">JOUF UNIVERSITY</span></div>', unsafe_allow_html=True)
