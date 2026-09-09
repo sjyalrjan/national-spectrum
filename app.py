@@ -12,7 +12,7 @@ from datetime import datetime
 # ---------------------------------------------------------
 st.set_page_config(
     page_title="National Spectrum Mosaic",
-    page_icon="",
+    page_icon="🏛️",
     layout="wide"
 )
 
@@ -22,15 +22,15 @@ st.set_page_config(
 if 'lang' not in st.session_state:
     st.session_state.lang = 'ar'
 
-# Switcher Button at Top Right
+# Switcher Button at Top
 col_space, col_btn = st.columns([8, 2])
 with col_btn:
     if st.session_state.lang == 'ar':
-        if st.button("Switch to English", key="lang_toggle"):
+        if st.button("Switch to English 🌐", key="lang_toggle"):
             st.session_state.lang = 'en'
             st.rerun()
     else:
-        if st.button("التحويل إلى العربية", key="lang_toggle"):
+        if st.button("التحويل إلى العربية 🌐", key="lang_toggle"):
             st.session_state.lang = 'ar'
             st.rerun()
 
@@ -72,7 +72,7 @@ T = {
         'quote_1': 'صوتٌ واحد تعبير،',
         'quote_2': 'وآلاف الأصوات تبني أمة.',
         'sub_quote': 'بصمتك الخاصة · متصلة بالفسيفساء الوطنية',
-        'footer': 'NATIONAL SPECTRUMS · DESIGNED & DEVELOPED BY SAJA ALARJAN<br><span style="color:#2CA880; font-size:9px;">JOUF UNIVERSITY</span>',
+        'footer': 'NATIONAL SPECTRUMS · DESIGNED & DEVELOPED BY SAJA ALARJAN<br><span style="color:#2CA880; font-size:10px;">JOUF UNIVERSITY</span>',
         'regions': {
             "المنطقة الشمالية": {"heritage": "سدو الصحراء", "description": "إيقاعات هندسية مستوحاة من نسيج السدو وطبيعة الصحراء.", "color": "#FF2A6D"},
             "المنطقة الوسطى": {"heritage": "العمارة النجديّة", "description": "تكوينات هندسية دافئة مستوحاة من الطين والعمارة النجديّة الأصيلة.", "color": "#FFC53D"},
@@ -115,7 +115,7 @@ T = {
         'quote_1': 'One voice is an expression.',
         'quote_2': 'Thousands become a nation.',
         'sub_quote': 'YOUR TILE · INTEGRATED INTO THE NATIONAL MOSAIC',
-        'footer': 'NATIONAL SPECTRUMS · DESIGNED & DEVELOPED BY SAJA ALARJAN<br><span style="color:#2CA880; font-size:9px;">JOUF UNIVERSITY</span>',
+        'footer': 'NATIONAL SPECTRUMS · DESIGNED & DEVELOPED BY SAJA ALARJAN<br><span style="color:#2CA880; font-size:10px;">JOUF UNIVERSITY</span>',
         'regions': {
             "Northern Region": {"heritage": "Sadu Weaving", "description": "Geometric rhythms inspired by Sadu textiles and desert landscapes.", "color": "#FF2A6D"},
             "Central Region": {"heritage": "Najdi Architecture", "description": "Terracotta geometry inspired by Najdi clay architecture.", "color": "#FFC53D"},
@@ -128,96 +128,131 @@ T = {
 
 txt = T[st.session_state.lang]
 
+# ---------------------------------------------------------
+# Modern Typography & UI Styling
+# ---------------------------------------------------------
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Cinzel:wght@500;700&display=swap');
 
-    .stApp {
+    /* Global Body Font Settings */
+    html, body, [class*="css"], .stApp {
+        font-family: 'Tajawal', 'Plus Jakarta Sans', -apple-system, sans-serif !important;
         background: radial-gradient(circle at 50% 0%, #0D2C22 0%, #061913 38%, #020907 100%);
         color: #F5F3EE;
-        font-family: 'DM Sans', sans-serif;
     }
+
     .block-container {
-        max-width: 1200px;
-        padding-top: 1rem;
+        max-width: 1100px;
+        padding-top: 1.5rem;
         padding-bottom: 4rem;
     }
+
     .hero {
         text-align: center;
-        padding: 10px 0 25px 0;
+        padding: 10px 0 30px 0;
     }
+
     .hero-kicker {
         color: #5BA88E;
-        font-size: 11px;
-        letter-spacing: 5px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 3px;
         text-transform: uppercase;
         margin-bottom: 12px;
     }
+
     .hero-title {
-        font-family: 'Playfair Display', serif;
-        font-size: 56px;
-        line-height: 1;
-        font-weight: 400;
-        letter-spacing: -2px;
+        font-family: 'Tajawal', 'Cinzel', serif !important;
+        font-size: 52px;
+        line-height: 1.15;
+        font-weight: 800;
+        letter-spacing: -0.5px;
         margin: 0;
         color: #F4F0E8;
     }
+
     .hero-title span {
         color: #2CA880;
+        background: linear-gradient(135deg, #2CA880 0%, #62CBB0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
+
     .hero-subtitle {
         color: #92B5A8;
-        font-size: 14px;
-        font-weight: 300;
-        letter-spacing: 0.5px;
-        margin-top: 15px;
+        font-size: 16px;
+        font-weight: 400;
+        letter-spacing: 0.2px;
+        margin-top: 14px;
     }
+
     .section-title {
-        font-family: 'Playfair Display', serif;
+        font-family: 'Tajawal', 'Plus Jakarta Sans', sans-serif !important;
         font-size: 26px;
+        font-weight: 700;
         color: #F1EEE7;
         margin-top: 35px;
-        margin-bottom: 15px;
+        margin-bottom: 18px;
         text-align: center;
     }
+
     .small-label {
         color: #5BA88E;
-        font-size: 10px;
+        font-size: 11px;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 3px;
+        letter-spacing: 2px;
     }
+
     .info-box {
-        background: rgba(11, 61, 46, 0.15);
-        border: 1px solid rgba(44, 168, 128, 0.20);
-        border-radius: 16px;
-        padding: 25px;
+        background: rgba(11, 61, 46, 0.25);
+        border: 1px solid rgba(44, 168, 128, 0.22);
+        backdrop-filter: blur(10px);
+        border-radius: 18px;
+        padding: 28px;
         margin: 20px auto;
         max-width: 850px;
         text-align: center;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
     }
+
     .dna-card {
-        background: rgba(11, 61, 46, 0.22);
-        border: 1px solid rgba(44, 168, 128, 0.25);
+        background: rgba(11, 61, 46, 0.28);
+        border: 1px solid rgba(44, 168, 128, 0.3);
         border-radius: 14px;
-        padding: 16px;
+        padding: 18px 12px;
         text-align: center;
     }
+
     .dna-value {
-        font-size: 20px;
-        font-weight: 500;
+        font-size: 22px;
+        font-weight: 700;
         color: #62CBB0;
+        margin-top: 6px;
+    }
+
+    .dna-tag {
+        font-size: 12px;
+        font-weight: 500;
+        color: #A3C9BC;
         margin-top: 4px;
     }
-    .dna-tag {
-        font-size: 11px;
-        color: #92B5A8;
-        margin-top: 2px;
+
+    /* Streamlit Buttons Styling */
+    .stButton>button {
+        font-family: 'Tajawal', 'Plus Jakarta Sans', sans-serif !important;
+        font-weight: 700 !important;
+        border-radius: 12px !important;
+        transition: all 0.3s ease !important;
     }
+
     .footer {
         text-align: center;
         color: #436B5E;
-        font-size: 10px;
-        letter-spacing: 3px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 2px;
         padding-top: 40px;
         line-height: 1.8;
     }
@@ -252,21 +287,21 @@ if "museum_tiles" not in st.session_state:
 # ---------------------------------------------------------
 st.markdown(f"""
 <div class="hero">
-<div class="hero-kicker">{txt['kicker']}</div>
-<div class="hero-title">{txt['hero_title']}</div>
-<div class="hero-subtitle">{txt['hero_sub']}</div>
+    <div class="hero-kicker">{txt['kicker']}</div>
+    <div class="hero-title">{txt['hero_title']}</div>
+    <div class="hero-subtitle">{txt['hero_sub']}</div>
 </div>
 """, unsafe_allow_html=True)
 
 st.markdown(f"""
 <div class="info-box">
-<div class="small-label">{txt['info_label']}</div>
-<h3 style="font-family:'Playfair Display'; font-weight:400; margin-top:8px; color:#F4F0E8; font-size:22px;">
-{txt['info_title']}
-</h3>
-<p style="color:#92B5A8; line-height:1.7; font-size:14px; margin-top:12px;">
-{txt['info_desc']}
-</p>
+    <div class="small-label">{txt['info_label']}</div>
+    <h3 style="font-family:'Tajawal', sans-serif; font-weight:700; margin-top:8px; color:#F4F0E8; font-size:22px;">
+        {txt['info_title']}
+    </h3>
+    <p style="color:#A3C9BC; line-height:1.8; font-size:15px; margin-top:12px; font-weight:400;">
+        {txt['info_desc']}
+    </p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -279,10 +314,10 @@ region_data = regions[selected_region]
 
 st.markdown(
     f"""
-    <div style="background: rgba(11, 61, 46, 0.2); border: 1px solid {region_data["color"]}66; border-radius: 16px; padding: 18px; max-width: 850px; margin: 0 auto 20px auto;">
-    <div class="small-label" style="color:{region_data["color"]};">{selected_region}</div>
-    <h3 style="font-family:'Playfair Display';font-weight:400;color:{region_data["color"]};margin:4px 0;">{region_data["heritage"]}</h3>
-    <p style="color:#81A89B;font-size:13px;margin:0;">{region_data["description"]}</p>
+    <div style="background: rgba(11, 61, 46, 0.25); border: 1px solid {region_data["color"]}77; border-radius: 16px; padding: 20px; max-width: 850px; margin: 0 auto 20px auto; text-align: center;">
+        <div class="small-label" style="color:{region_data["color"]}; font-weight:800;">{selected_region}</div>
+        <h3 style="font-family:'Tajawal', sans-serif; font-weight:700; color:{region_data["color"]}; margin:6px 0 8px 0; font-size:20px;">{region_data["heritage"]}</h3>
+        <p style="color:#A3C9BC; font-size:14px; margin:0; font-weight:400;">{region_data["description"]}</p>
     </div>
     """,
     unsafe_allow_html=True
@@ -321,7 +356,7 @@ if audio_file is not None:
         c3.markdown(f'<div class="dna-card"><div class="small-label">{txt["bpm"]}</div><div class="dna-value">{tempo_val:.0f} BPM</div><div class="dna-tag">{rhythm_desc}</div></div>', unsafe_allow_html=True)
         c4.markdown(f'<div class="dna-card"><div class="small-label">{txt["duration"]}</div><div class="dna-value">{len(y)/sr:.1f}s</div><div class="dna-tag">{txt["recorded"]}</div></div>', unsafe_allow_html=True)
 
-        if st.button(txt['add_btn']):
+        if st.button(txt['add_btn'], use_container_width=True):
             new_tile = {
                 "id": f"SPECTRUM-{len(st.session_state.museum_tiles)+1:03d}",
                 "region": selected_region,
@@ -341,7 +376,7 @@ if audio_file is not None:
         st.error(txt['error_msg'])
 
 # ---------------------------------------------------------
-# Original Clean Mosaic HTML Grid + Native Click & Audio
+# Mosaic HTML Grid + Native Audio
 # ---------------------------------------------------------
 st.markdown(f'<div class="section-title">{txt["mosaic_title"]}</div>', unsafe_allow_html=True)
 
@@ -380,11 +415,11 @@ mosaic_component = f"""
 <html>
 <head>
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700&family=Plus+Jakarta+Sans:wght@500;600&display=swap');
     body {{
         margin: 0;
         background: transparent;
-        font-family: 'DM Sans', sans-serif;
+        font-family: 'Tajawal', 'Plus Jakarta Sans', sans-serif;
         color: #F5F3EE;
     }}
     .mosaic-box {{
@@ -394,7 +429,7 @@ mosaic_component = f"""
     }}
     .mosaic-grid {{
         display: grid;
-        grid-template-columns: repeat(7, 46px);
+        grid-template-columns: repeat(7, 48px);
         gap: 12px;
         background: rgba(4, 20, 15, 0.65);
         border: 1px solid rgba(44, 168, 128, 0.22);
@@ -403,8 +438,8 @@ mosaic_component = f"""
         box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
     }}
     .tile {{
-        width: 46px;
-        height: 46px;
+        width: 48px;
+        height: 48px;
         border-radius: 10px;
         transition: transform 0.25s ease, box-shadow 0.25s ease;
     }}
@@ -437,8 +472,9 @@ mosaic_component = f"""
     #status-bar {{
         text-align: center;
         margin-top: 15px;
-        font-size: 13px;
-        color: #92B5A8;
+        font-size: 14px;
+        font-weight: 500;
+        color: #A3C9BC;
         min-height: 20px;
     }}
 </style>
@@ -475,13 +511,13 @@ function playTileAudio(tileId, audioSrc, element) {{
 components.html(mosaic_component, height=total_slots * 10 + 200)
 
 # ---------------------------------------------------------
-# Footer
+# Footer Section
 # ---------------------------------------------------------
 st.markdown(f"""
-<div style="text-align:center;padding:30px 20px 10px 20px;">
-<div style="font-family:'Playfair Display';font-size:30px;color:#F0ECE5;">{txt['quote_1']}</div>
-<div style="font-family:'Playfair Display';font-size:30px;color:#2CA880;margin-top:4px;">{txt['quote_2']}</div>
-<div style="color:#5BA88E;font-size:11px;margin-top:14px;letter-spacing:1px;">{txt['sub_quote']}</div>
+<div style="text-align:center; padding:30px 20px 10px 20px;">
+    <div style="font-family:'Tajawal', sans-serif; font-size:28px; font-weight:700; color:#F0ECE5;">{txt['quote_1']}</div>
+    <div style="font-family:'Tajawal', sans-serif; font-size:28px; font-weight:700; color:#2CA880; margin-top:4px;">{txt['quote_2']}</div>
+    <div style="color:#5BA88E; font-size:12px; font-weight:700; margin-top:14px; letter-spacing:1px;">{txt['sub_quote']}</div>
 </div>
 """, unsafe_allow_html=True)
 
