@@ -12,7 +12,7 @@ from datetime import datetime
 # ---------------------------------------------------------
 st.set_page_config(
     page_title="National Spectrum Mosaic",
-    page_icon="🏛️",
+    page_icon="",
     layout="wide"
 )
 
@@ -26,16 +26,16 @@ if 'lang' not in st.session_state:
 col_space, col_btn = st.columns([8, 2])
 with col_btn:
     if st.session_state.lang == 'ar':
-        if st.button("Switch to English 🌐", key="lang_toggle"):
+        if st.button("Switch to English", key="lang_toggle"):
             st.session_state.lang = 'en'
             st.rerun()
     else:
-        if st.button("التحويل إلى العربية 🌐", key="lang_toggle"):
+        if st.button("التحويل إلى العربية", key="lang_toggle"):
             st.session_state.lang = 'ar'
             st.rerun()
 
 # ---------------------------------------------------------
-# Translations & Region Colors Dictionary
+# Translations & Dynamic Region Mapping
 # ---------------------------------------------------------
 T = {
     'ar': {
@@ -72,13 +72,13 @@ T = {
         'quote_1': 'صوتٌ واحد تعبير،',
         'quote_2': 'وآلاف الأصوات تبني أمة.',
         'sub_quote': 'بصمتك الخاصة · متصلة بالفسيفساء الوطنية',
-        'footer': 'NATIONAL SPECTRUMS · DESIGNED & DEVELOPED BY SAJA ALARJAN<br><span style="color:#2CA880; font-size:10px;">JOUF UNIVERSITY</span>',
+        'footer': 'NATIONAL SPECTRUMS · DESIGNED & DEVELOPED BY SAJA ALARJAN<br><span style="color:#2CA880; font-size:9px;">JOUF UNIVERSITY</span>',
         'regions': {
-            "north": {"name": "المنطقة الشمالية", "heritage": "السدو", "description": "إيقاعات هندسية مستوحاة من نسيج السدو وطبيعة الصحراء.", "color": "#FF2A6D"},
-            "central": {"name": "المنطقة الوسطى", "heritage": "العمارة النجديّة", "description": "تكوينات هندسية دافئة مستوحاة من الطين والعمارة النجديّة الأصيلة.", "color": "#FFC53D"},
-            "south": {"name": "المنطقة الجنوبية", "heritage": "القط العسيري", "description": "أنماط زاهية ومترابطة مستوحاة من الفن البصري للقط العسيري.", "color": "#00F5D4"},
-            "west": {"name": "المنطقة الغربية", "heritage": "الرواشين والحجاز", "description": "تفاصيل معمارية عمودية مستوحاة من رواشين جدة التاريخية والبحر الأحمر.", "color": "#0066FF"},
-            "east": {"name": "المنطقة الشرقية", "heritage": "واحات النخيل", "description": "تموجات وانسيابات مستوحاة من مياه الخليج وواحات الأحساء.", "color": "#00E676"}
+            "Northern Region": {"name": "المنطقة الشمالية", "heritage": "السدو", "description": "إيقاعات هندسية مستوحاة من نسيج السدو وطبيعة الصحراء.", "color": "#FF2A6D"},
+            "Central Region": {"name": "المنطقة الوسطى", "heritage": "العمارة النجديّة", "description": "تكوينات هندسية دافئة مستوحاة من الطين والعمارة النجديّة الأصيلة.", "color": "#FFC53D"},
+            "Southern Region": {"name": "المنطقة الجنوبية", "heritage": "القط العسيري", "description": "أنماط زاهية ومترابطة مستوحاة من الفن البصري للقط العسيري.", "color": "#00F5D4"},
+            "Western Region": {"name": "المنطقة الغربية", "heritage": "الرواشين والحجاز", "description": "تفاصيل معمارية عمودية مستوحاة من رواشين جدة التاريخية والبحر الأحمر.", "color": "#0066FF"},
+            "Eastern Region": {"name": "المنطقة الشرقية", "heritage": "واحات النخيل", "description": "تموجات وانسيابات مستوحاة من مياه الخليج وواحات الأحساء.", "color": "#00E676"}
         }
     },
     'en': {
@@ -115,13 +115,13 @@ T = {
         'quote_1': 'One voice is an expression.',
         'quote_2': 'Thousands become a nation.',
         'sub_quote': 'YOUR TILE · INTEGRATED INTO THE NATIONAL MOSAIC',
-        'footer': 'NATIONAL SPECTRUMS · DESIGNED & DEVELOPED BY SAJA ALARJAN<br><span style="color:#2CA880; font-size:10px;">JOUF UNIVERSITY</span>',
+        'footer': 'NATIONAL SPECTRUMS · DESIGNED & DEVELOPED BY SAJA ALARJAN<br><span style="color:#2CA880; font-size:9px;">JOUF UNIVERSITY</span>',
         'regions': {
-            "north": {"name": "Northern Region", "heritage": "Sadu Weaving", "description": "Geometric rhythms inspired by Sadu textiles and desert landscapes.", "color": "#FF2A6D"},
-            "central": {"name": "Central Region", "heritage": "Najdi Architecture", "description": "Terracotta geometry inspired by Najdi clay architecture.", "color": "#FFC53D"},
-            "south": {"name": "Southern Region", "heritage": "Al-Qatt Al-Asiri", "description": "Layered geometry inspired by the colorful visual language of Al-Qatt.", "color": "#00F5D4"},
-            "west": {"name": "Western Region", "heritage": "Rawashin & Hejaz", "description": "Vertical structures inspired by Rawashin, old Jeddah and the Red Sea.", "color": "#0066FF"},
-            "east": {"name": "Eastern Region", "heritage": "Palm Oases", "description": "Flowing structures inspired by palms, water and the Eastern oasis.", "color": "#00E676"}
+            "Northern Region": {"name": "Northern Region", "heritage": "Sadu Weaving", "description": "Geometric rhythms inspired by Sadu textiles and desert landscapes.", "color": "#FF2A6D"},
+            "Central Region": {"name": "Central Region", "heritage": "Najdi Architecture", "description": "Terracotta geometry inspired by Najdi clay architecture.", "color": "#FFC53D"},
+            "Southern Region": {"name": "Southern Region", "heritage": "Al-Qatt Al-Asiri", "description": "Layered geometry inspired by the colorful visual language of Al-Qatt.", "color": "#00F5D4"},
+            "Western Region": {"name": "Western Region", "heritage": "Rawashin & Hejaz", "description": "Vertical structures inspired by Rawashin, old Jeddah and the Red Sea.", "color": "#0066FF"},
+            "Eastern Region": {"name": "Eastern Region", "heritage": "Palm Oases", "description": "Flowing structures inspired by palms, water and the Eastern oasis.", "color": "#00E676"}
         }
     }
 }
@@ -129,128 +129,117 @@ T = {
 txt = T[st.session_state.lang]
 
 # ---------------------------------------------------------
-# Modern Typography & UI Styling
+# Refined Modern Typography & Original Styling
 # ---------------------------------------------------------
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Cinzel:wght@500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap');
 
     html, body, [class*="css"], .stApp {
-        font-family: 'Tajawal', 'Plus Jakarta Sans', -apple-system, sans-serif !important;
         background: radial-gradient(circle at 50% 0%, #0D2C22 0%, #061913 38%, #020907 100%);
         color: #F5F3EE;
+        font-family: 'Tajawal', 'Plus Jakarta Sans', sans-serif;
     }
 
     .block-container {
-        max-width: 1100px;
-        padding-top: 1.5rem;
+        max-width: 1200px;
+        padding-top: 1rem;
         padding-bottom: 4rem;
     }
 
     .hero {
         text-align: center;
-        padding: 10px 0 30px 0;
+        padding: 10px 0 25px 0;
     }
 
     .hero-kicker {
         color: #5BA88E;
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 3px;
+        font-size: 11px;
+        letter-spacing: 4px;
         text-transform: uppercase;
         margin-bottom: 12px;
     }
 
     .hero-title {
-        font-family: 'Tajawal', 'Cinzel', serif !important;
-        font-size: 52px;
-        line-height: 1.15;
-        font-weight: 800;
-        letter-spacing: -0.5px;
+        font-family: 'Playfair Display', 'Tajawal', serif;
+        font-size: 54px;
+        line-height: 1.1;
+        font-weight: 400;
+        letter-spacing: -1px;
         margin: 0;
         color: #F4F0E8;
     }
 
     .hero-title span {
         color: #2CA880;
-        background: linear-gradient(135deg, #2CA880 0%, #62CBB0 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
     }
 
     .hero-subtitle {
         color: #92B5A8;
-        font-size: 16px;
-        font-weight: 400;
-        letter-spacing: 0.2px;
-        margin-top: 14px;
+        font-size: 15px;
+        font-weight: 300;
+        letter-spacing: 0.5px;
+        margin-top: 15px;
     }
 
     .section-title {
-        font-family: 'Tajawal', 'Plus Jakarta Sans', sans-serif !important;
+        font-family: 'Playfair Display', 'Tajawal', serif;
         font-size: 26px;
-        font-weight: 700;
         color: #F1EEE7;
         margin-top: 35px;
-        margin-bottom: 18px;
+        margin-bottom: 15px;
         text-align: center;
     }
 
     .small-label {
         color: #5BA88E;
-        font-size: 11px;
-        font-weight: 700;
+        font-size: 10px;
         text-transform: uppercase;
-        letter-spacing: 2px;
+        letter-spacing: 3px;
     }
 
     .info-box {
-        background: rgba(11, 61, 46, 0.25);
-        border: 1px solid rgba(44, 168, 128, 0.22);
-        backdrop-filter: blur(10px);
-        border-radius: 18px;
-        padding: 28px;
+        background: rgba(11, 61, 46, 0.15);
+        border: 1px solid rgba(44, 168, 128, 0.20);
+        border-radius: 16px;
+        padding: 25px;
         margin: 20px auto;
         max-width: 850px;
         text-align: center;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
     }
 
     .dna-card {
-        background: rgba(11, 61, 46, 0.28);
-        border: 1px solid rgba(44, 168, 128, 0.3);
+        background: rgba(11, 61, 46, 0.22);
+        border: 1px solid rgba(44, 168, 128, 0.25);
         border-radius: 14px;
-        padding: 18px 12px;
+        padding: 16px;
         text-align: center;
     }
 
     .dna-value {
-        font-size: 22px;
-        font-weight: 700;
+        font-size: 20px;
+        font-weight: 500;
         color: #62CBB0;
-        margin-top: 6px;
+        margin-top: 4px;
     }
 
     .dna-tag {
-        font-size: 12px;
-        font-weight: 500;
-        color: #A3C9BC;
-        margin-top: 4px;
+        font-size: 11px;
+        color: #92B5A8;
+        margin-top: 2px;
     }
 
     .stButton>button {
         font-family: 'Tajawal', 'Plus Jakarta Sans', sans-serif !important;
-        font-weight: 700 !important;
-        border-radius: 12px !important;
-        transition: all 0.3s ease !important;
+        border-radius: 10px !important;
+        font-weight: 500 !important;
     }
 
     .footer {
         text-align: center;
         color: #436B5E;
-        font-size: 11px;
-        font-weight: 500;
-        letter-spacing: 2px;
+        font-size: 10px;
+        letter-spacing: 3px;
         padding-top: 40px;
         line-height: 1.8;
     }
@@ -294,17 +283,17 @@ st.markdown(f"""
 st.markdown(f"""
 <div class="info-box">
     <div class="small-label">{txt['info_label']}</div>
-    <h3 style="font-family:'Tajawal', sans-serif; font-weight:700; margin-top:8px; color:#F4F0E8; font-size:22px;">
+    <h3 style="font-family:'Playfair Display', 'Tajawal', serif; font-weight:400; margin-top:8px; color:#F4F0E8; font-size:22px;">
         {txt['info_title']}
     </h3>
-    <p style="color:#A3C9BC; line-height:1.8; font-size:15px; margin-top:12px; font-weight:400;">
+    <p style="color:#92B5A8; line-height:1.7; font-size:14px; margin-top:12px;">
         {txt['info_desc']}
     </p>
 </div>
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# Dynamic Region Selection & Color Binding Fix
+# Dynamic Region Selection & Color Binding
 # ---------------------------------------------------------
 regions = txt['regions']
 region_keys = list(regions.keys())
@@ -320,10 +309,10 @@ active_color = region_data["color"]
 
 st.markdown(
     f"""
-    <div style="background: rgba(11, 61, 46, 0.25); border: 2px solid {active_color}; border-radius: 16px; padding: 20px; max-width: 850px; margin: 0 auto 20px auto; text-align: center; box-shadow: 0 0 15px {active_color}33;">
-        <div class="small-label" style="color:{active_color}; font-weight:800;">{region_data["name"]}</div>
-        <h3 style="font-family:'Tajawal', sans-serif; font-weight:700; color:{active_color}; margin:6px 0 8px 0; font-size:20px;">{region_data["heritage"]}</h3>
-        <p style="color:#A3C9BC; font-size:14px; margin:0; font-weight:400;">{region_data["description"]}</p>
+    <div style="background: rgba(11, 61, 46, 0.2); border: 1px solid {active_color}aa; border-radius: 16px; padding: 18px; max-width: 850px; margin: 0 auto 20px auto; text-align: center;">
+        <div class="small-label" style="color:{active_color};">{region_data["name"]}</div>
+        <h3 style="font-family:'Playfair Display', 'Tajawal', serif; font-weight:400; color:{active_color}; margin:4px 0;">{region_data["heritage"]}</h3>
+        <p style="color:#81A89B; font-size:13px; margin:0;">{region_data["description"]}</p>
     </div>
     """,
     unsafe_allow_html=True
@@ -421,7 +410,7 @@ mosaic_component = f"""
 <html>
 <head>
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700&family=Plus+Jakarta+Sans:wght@500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500&display=swap');
     body {{
         margin: 0;
         background: transparent;
@@ -435,7 +424,7 @@ mosaic_component = f"""
     }}
     .mosaic-grid {{
         display: grid;
-        grid-template-columns: repeat(7, 48px);
+        grid-template-columns: repeat(7, 46px);
         gap: 12px;
         background: rgba(4, 20, 15, 0.65);
         border: 1px solid rgba(44, 168, 128, 0.22);
@@ -444,8 +433,8 @@ mosaic_component = f"""
         box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
     }}
     .tile {{
-        width: 48px;
-        height: 48px;
+        width: 46px;
+        height: 46px;
         border-radius: 10px;
         transition: transform 0.25s ease, box-shadow 0.25s ease;
     }}
@@ -478,9 +467,8 @@ mosaic_component = f"""
     #status-bar {{
         text-align: center;
         margin-top: 15px;
-        font-size: 14px;
-        font-weight: 500;
-        color: #A3C9BC;
+        font-size: 13px;
+        color: #92B5A8;
         min-height: 20px;
     }}
 </style>
@@ -521,9 +509,9 @@ components.html(mosaic_component, height=total_slots * 10 + 200)
 # ---------------------------------------------------------
 st.markdown(f"""
 <div style="text-align:center; padding:30px 20px 10px 20px;">
-    <div style="font-family:'Tajawal', sans-serif; font-size:28px; font-weight:700; color:#F0ECE5;">{txt['quote_1']}</div>
-    <div style="font-family:'Tajawal', sans-serif; font-size:28px; font-weight:700; color:#2CA880; margin-top:4px;">{txt['quote_2']}</div>
-    <div style="color:#5BA88E; font-size:12px; font-weight:700; margin-top:14px; letter-spacing:1px;">{txt['sub_quote']}</div>
+    <div style="font-family:'Playfair Display', 'Tajawal', serif; font-size:30px; color:#F0ECE5;">{txt['quote_1']}</div>
+    <div style="font-family:'Playfair Display', 'Tajawal', serif; font-size:30px; color:#2CA880; margin-top:4px;">{txt['quote_2']}</div>
+    <div style="color:#5BA88E; font-size:11px; margin-top:14px; letter-spacing:1px;">{txt['sub_quote']}</div>
 </div>
 """, unsafe_allow_html=True)
 
