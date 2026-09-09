@@ -12,7 +12,7 @@ from datetime import datetime
 # ---------------------------------------------------------
 st.set_page_config(
     page_title="National Spectrum Mosaic",
-    page_icon="",
+    page_icon="🏛️",
     layout="wide"
 )
 
@@ -21,18 +21,6 @@ st.set_page_config(
 # ---------------------------------------------------------
 if 'lang' not in st.session_state:
     st.session_state.lang = 'ar'
-
-# Switcher Button at Top
-col_space, col_btn = st.columns([8, 2])
-with col_btn:
-    if st.session_state.lang == 'ar':
-        if st.button("Switch to English", key="lang_toggle"):
-            st.session_state.lang = 'en'
-            st.rerun()
-    else:
-        if st.button("التحويل إلى العربية", key="lang_toggle"):
-            st.session_state.lang = 'ar'
-            st.rerun()
 
 # ---------------------------------------------------------
 # Translations & Dynamic Region Mapping
@@ -129,7 +117,7 @@ T = {
 txt = T[st.session_state.lang]
 
 # ---------------------------------------------------------
-# Refined Modern Typography & Original Styling
+# Styling & Typography
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -145,6 +133,26 @@ st.markdown("""
         max-width: 1200px;
         padding-top: 1rem;
         padding-bottom: 4rem;
+    }
+
+    /* Highlighted Language Switcher Button Styling */
+    div[data-testid="stColumn"] .stButton > button {
+        background: rgba(44, 168, 128, 0.15) !important;
+        border: 1px solid rgba(44, 168, 128, 0.4) !important;
+        color: #62CBB0 !important;
+        font-family: 'Tajawal', 'Plus Jakarta Sans', sans-serif !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        border-radius: 20px !important;
+        padding: 4px 16px !important;
+        transition: all 0.3s ease !important;
+    }
+
+    div[data-testid="stColumn"] .stButton > button:hover {
+        background: rgba(44, 168, 128, 0.3) !important;
+        border-color: #62CBB0 !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 0 12px rgba(44, 168, 128, 0.4);
     }
 
     .hero {
@@ -229,12 +237,6 @@ st.markdown("""
         margin-top: 2px;
     }
 
-    .stButton>button {
-        font-family: 'Tajawal', 'Plus Jakarta Sans', sans-serif !important;
-        border-radius: 10px !important;
-        font-weight: 500 !important;
-    }
-
     .footer {
         text-align: center;
         color: #436B5E;
@@ -245,6 +247,20 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
+
+# ---------------------------------------------------------
+# Prominent Top Navigation Bar (Language Switcher)
+# ---------------------------------------------------------
+col_space, col_btn = st.columns([8, 2])
+with col_btn:
+    if st.session_state.lang == 'ar':
+        if st.button("English", key="lang_toggle"):
+            st.session_state.lang = 'en'
+            st.rerun()
+    else:
+        if st.button("العربية", key="lang_toggle"):
+            st.session_state.lang = 'ar'
+            st.rerun()
 
 # ---------------------------------------------------------
 # Data Persistence
