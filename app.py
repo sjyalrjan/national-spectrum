@@ -12,15 +12,16 @@ from streamlit_mic_recorder import mic_recorder
 # Page Configuration
 # ---------------------------------------------------------
 st.set_page_config(
-    page_title="National Spectrum Mosaic | فسيفساء الطيف الوطني",
+    page_title="National Spectrum | فسيفساء الطيف الوطني",
+    page_icon="",
     layout="wide"
 )
 
 # ---------------------------------------------------------
 # Language State Management
 # ---------------------------------------------------------
-if "lang" not in st.session_state:
-    st.session_state.lang = "ar"
+if 'lang' not in st.session_state:
+    st.session_state.lang = 'ar'
 
 # ---------------------------------------------------------
 # Custom Styling & Typography
@@ -31,70 +32,36 @@ st.markdown("""
 
     html, body, [class*="css"] {
         font-family: 'Tajawal', sans-serif;
-        background-color: #080A0C;
-        color: #E2E8F0;
+        background-color: #080a0c;
+        color: #e2e8f0;
     }
 
     .stApp {
-        background: radial-gradient(circle at 50% 0%, #111822 0%, #080A0C 75%);
+        background: #080a0c;
     }
 
-    /* Header styling */
     .hero-title {
         font-family: 'Tajawal', sans-serif;
         font-weight: 900;
         font-size: 2.8rem;
-        background: linear-gradient(135deg, #FFFFFF 0%, #CBD5E1 50%, #2CA880 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: #ffffff;
         text-align: center;
         margin-top: 10px;
         margin-bottom: 5px;
-        letter-spacing: -0.5px;
     }
 
     .hero-subtitle {
         font-family: 'Tajawal', sans-serif;
         font-size: 1.1rem;
-        color: #94A3B8;
+        color: #94a3b8;
         text-align: center;
         margin-bottom: 30px;
-        font-weight: 400;
-    }
-
-    /* Card Box Container */
-    .custom-card {
-        background: rgba(15, 23, 42, 0.65);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 24px;
-        backdrop-filter: blur(12px);
-        margin-bottom: 24px;
-        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
-    }
-
-    .card-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #F8FAFC;
-        margin-bottom: 16px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    /* Button overrides */
-    .stButton > button {
-        border-radius: 10px;
-        font-family: 'Tajawal', sans-serif;
-        font-weight: 600;
-        transition: all 0.3s ease;
     }
 
     .footer {
         text-align: center;
         padding: 30px 0 10px 0;
-        color: #64748B;
+        color: #64748b;
         font-size: 0.85rem;
         border-top: 1px solid rgba(255, 255, 255, 0.05);
         margin-top: 50px;
@@ -105,64 +72,56 @@ st.markdown("""
 # Language Toggle Button Top Right
 col_top1, col_top2 = st.columns([8, 2])
 with col_top2:
-    if st.session_state.lang == "ar":
+    if st.session_state.lang == 'ar':
         if st.button("Switch to English"):
-            st.session_state.lang = "en"
+            st.session_state.lang = 'en'
             st.rerun()
     else:
         if st.button("التغيير للغة العربية"):
-            st.session_state.lang = "ar"
+            st.session_state.lang = 'ar'
             st.rerun()
 
 # ---------------------------------------------------------
 # Texts Translation Dictionary
 # ---------------------------------------------------------
 T = {
-    "ar": {
-        "title": "مَتْحَفُ الطَّيْفِ الوَطَنِيِّ",
-        "subtitle": "تَجْسِيدٌ بَصَرِيٌّ حِسِّيٌّ لِلأَصْوَاتِ وَالنَّبَضَاتِ الوَطَنِيَّةِ",
-        "gift_title": "أَهْدِ صَوْتَكَ لِلْمَتْحَفِ",
-        "gift_method": "طريقة إضافة الصوت:",
-        "option_rec": "تسجيل مباشر",
-        "option_file": "رفع ملف صوتي",
-        "rec_prompt": "اضغط لبدء التسجيل الصوتي:",
-        "upload_prompt": "اختر ملفاً صوتياً (MP3, WAV):",
-        "region_label": "المنطقة أو الجهة:",
-        "regions": ["الرياض", "مكة المكرمة", "المنطقة الشرقية", "المدينة المنورة", "عسير", "القصيم", "حائل", "تبوك", "الجوف", "جازان", "نجران", "الباحة", "الحدود الشمالية"],
-        "tag_label": "شعور أو وصف البصمة الصوتية (اختياري):",
-        "tag_ph": "مثال: اعتزاز، فرحة، نشيد، دعاء...",
-        "submit_btn": "تجسيد الصوت وحفظه في الفسيفساء",
-        "mosaic_title": "فسيفساء الطيف الوطني",
-        "mosaic_sub": "كل بلاطة توثق بصمة صوتية فريدة؛ اضغط على أي بلاطة للاستماع.",
-        "analytics_title": "تحليل الخصائص الصوتية",
-        "metric_pitch": "متوسط حدة الصوت (Pitch)",
-        "metric_energy": "الطاقة والجهارة (RMS)",
-        "metric_tempo": "الإيقاع المقدر (BPM)",
-        "success_msg": "تم إضافة بصمتك الصوتية بنجاح إلى الفسيفساء الوطنية!",
-        "footer": "متحف الطيف الوطني - تم التطوير بواسطة سجى العرجان | جامعة الجوف"
+    'ar': {
+        'title': 'مَتْحَفُ الطَّيْفِ الوَطَنِيِّ',
+        'subtitle': 'تَجْسِيدٌ بَصَرِيٌّ حِسِّيٌّ لِلأَصْوَاتِ وَالنَّبَضَاتِ الوَطَنِيَّةِ',
+        'gift_title': 'أَهْدِ صَوْتَكَ لِلْمَتْحَفِ',
+        'gift_method': 'طريقة إضافة الصوت:',
+        'option_rec': 'تسجيل مباشر',
+        'option_file': 'رفع ملف صوتي',
+        'rec_prompt': 'اضغط لبدء التسجيل الصوتي:',
+        'upload_prompt': 'اختر ملفاً صوتياً (MP3, WAV):',
+        'region_label': 'المنطقة أو الجهة:',
+        'regions': ["الرياض", "مكة المكرمة", "المنطقة الشرقية", "المدينة المنورة", "عسير", "القصيم", "حائل", "تبوك", "الجوف", "جازان", "نجران", "الباحة", "الحدود الشمالية"],
+        'tag_label': 'شعور أو وصف البصمة الصوتية (اختياري):',
+        'tag_ph': 'مثال: اعتزاز، فرحة، نشيد، دعاء...',
+        'submit_btn': 'تجسيد الصوت وحفظه في الفسيفساء',
+        'mosaic_title': 'فسيفساء الطيف الوطني',
+        'mosaic_sub': 'كل بلاطة توثق بصمة صوتية فريدة؛ اضغط على أي بلاطة للاستماع.',
+        'success_msg': 'تم إضافة بصمتك الصوتية بنجاح إلى الفسيفساء الوطنية!',
+        'footer': 'متحف الطيف الوطني - تم التطوير بواسطة سجى العرجان | جامعة الجوف'
     },
-    "en": {
-        "title": "NATIONAL SPECTRUM MUSEUM",
-        "subtitle": "Sensory & Visual Representation of National Voices",
-        "gift_title": "Gift Your Voice to the Museum",
-        "gift_method": "Input Method:",
-        "option_rec": "Live Recording",
-        "option_file": "Upload Audio File",
-        "rec_prompt": "Click to record:",
-        "upload_prompt": "Choose an audio file (MP3, WAV):",
-        "region_label": "Region / Location:",
-        "regions": ["Riyadh", "Makkah", "Eastern Province", "Madinah", "Asir", "Qassim", "Hail", "Tabuk", "Al-Jouf", "Jazan", "Najran", "Al-Baha", "Northern Borders"],
-        "tag_label": "Emotion or Tag (Optional):",
-        "tag_ph": "e.g., Pride, Joy, Chant, Reflection...",
-        "submit_btn": "Embody Voice & Add to Mosaic",
-        "mosaic_title": "National Spectrum Mosaic",
-        "mosaic_sub": "Each tile represents a unique voice print; click any tile to listen.",
-        "analytics_title": "Audio Features Analytics",
-        "metric_pitch": "Average Pitch (Hz)",
-        "metric_energy": "RMS Energy",
-        "metric_tempo": "Estimated Tempo (BPM)",
-        "success_msg": "Your voice print has been successfully integrated into the national mosaic!",
-        "footer": "NATIONAL SPECTRUM - DESIGNED & DEVELOPED BY SAJA ALARJAN | JOUF UNIVERSITY"
+    'en': {
+        'title': 'NATIONAL SPECTRUM MUSEUM',
+        'subtitle': 'Sensory & Visual Representation of National Voices',
+        'gift_title': 'Gift Your Voice to the Museum',
+        'gift_method': 'Input Method:',
+        'option_rec': 'Live Recording',
+        'option_file': 'Upload Audio File',
+        'rec_prompt': 'Click to record:',
+        'upload_prompt': 'Choose an audio file (MP3, WAV):',
+        'region_label': 'Region / Location:',
+        'regions': ["Riyadh", "Makkah", "Eastern Province", "Madinah", "Asir", "Qassim", "Hail", "Tabuk", "Al-Jouf", "Jazan", "Najran", "Al-Baha", "Northern Borders"],
+        'tag_label': 'Emotion or Tag (Optional):',
+        'tag_ph': 'e.g., Pride, Joy, Chant, Reflection...',
+        'submit_btn': 'Embody Voice & Add to Mosaic',
+        'mosaic_title': 'National Spectrum Mosaic',
+        'mosaic_sub': 'Each tile represents a unique voice print; click any tile to listen.',
+        'success_msg': 'Your voice print has been successfully integrated into the national mosaic!',
+        'footer': 'NATIONAL SPECTRUM - DESIGNED & DEVELOPED BY SAJA ALARJAN | JOUF UNIVERSITY'
     }
 }
 
@@ -200,45 +159,43 @@ tiles_data = load_data()
 col_input, col_display = st.columns([1, 1], gap="large")
 
 with col_input:
-    st.markdown(f'<div class="card-title">{txt["gift_title"]}</div>', unsafe_allow_html=True)
+    st.subheader(txt["gift_title"])
     
     input_method = st.radio(
-        txt["gift_method"],
-        [txt["option_rec"], txt["option_file"]],
+        txt['gift_method'],
+        [txt['option_rec'], txt['option_file']],
         horizontal=True
     )
 
     audio_bytes = None
 
-    if input_method == txt["option_rec"]:
-        st.write(txt["rec_prompt"])
+    if input_method == txt['option_rec']:
+        st.write(txt['rec_prompt'])
         audio_dict = mic_recorder(
-            start_prompt=("بدء التسجيل" if st.session_state.lang == "ar" else "Start Recording"),
-            stop_prompt=("إيقاف التسجيل" if st.session_state.lang == "ar" else "Stop Recording"),
-            key="recorder"
+            start_prompt=("بدء التسجيل" if st.session_state.lang == 'ar' else "Start Recording"),
+            stop_prompt=("إيقاف التسجيل" if st.session_state.lang == 'ar' else "Stop Recording"),
+            key='recorder'
         )
         if audio_dict:
-            audio_bytes = audio_dict["bytes"]
-            st.audio(audio_bytes, format="audio/wav")
+            audio_bytes = audio_dict['bytes']
+            st.audio(audio_bytes, format='audio/wav')
     else:
-        uploaded_file = st.file_uploader(txt["upload_prompt"], type=["wav", "mp3", "m4a", "ogg"])
+        uploaded_file = st.file_uploader(txt['upload_prompt'], type=['wav', 'mp3', 'm4a', 'ogg'])
         if uploaded_file is not None:
             audio_bytes = uploaded_file.read()
             st.audio(audio_bytes)
 
-    region = st.selectbox(txt["region_label"], txt["regions"])
-    tag = st.text_input(txt["tag_label"], placeholder=txt["tag_ph"])
+    region = st.selectbox(txt['region_label'], txt['regions'])
+    tag = st.text_input(txt['tag_label'], placeholder=txt['tag_ph'])
 
-    if st.button(txt["submit_btn"], use_container_width=True, type="primary"):
+    if st.button(txt['submit_btn'], use_container_width=True, type="primary"):
         if audio_bytes:
-            # Color Generation from Audio Features
             try:
                 import io
                 y, sr = librosa.load(io.BytesIO(audio_bytes), duration=5)
                 pitch = float(np.mean(librosa.feature.spectral_centroid(y=y, sr=sr)))
                 energy = float(np.mean(librosa.feature.rms(y=y)))
                 
-                # Map audio properties to RGB color
                 r_val = int(np.clip((pitch / 4000) * 255, 50, 255))
                 g_val = int(np.clip((energy * 10) * 255, 100, 240))
                 b_val = int(np.clip(255 - (r_val / 2), 100, 255))
@@ -246,7 +203,7 @@ with col_input:
             except Exception:
                 hex_color = "#2CA880"
 
-            b64_audio = base64.b64encode(audio_bytes).decode("utf-8")
+            b64_audio = base64.b64encode(audio_bytes).decode('utf-8')
             audio_uri = f"data:audio/wav;base64,{b64_audio}"
 
             new_tile = {
@@ -259,16 +216,15 @@ with col_input:
 
             tiles_data.append(new_tile)
             save_data(tiles_data)
-            st.success(txt["success_msg"])
+            st.success(txt['success_msg'])
             st.rerun()
         else:
-            st.warning("رجاءً سجل صوتاً أو ارفع ملفاً أولاً!" if st.session_state.lang == "ar" else "Please record or upload audio first!")
+            st.warning("رجاءً سجل صوتاً أو ارفع ملفاً أولاً!" if st.session_state.lang == 'ar' else "Please record or upload audio first!")
 
 with col_display:
-    st.markdown(f'<div class="card-title">{txt["mosaic_title"]}</div>', unsafe_allow_html=True)
-    st.caption(txt["mosaic_sub"])
+    st.subheader(txt["mosaic_title"])
+    st.caption(txt['mosaic_sub'])
 
-    # Interactive HTML Mosaic Grid
     mosaic_json = json.dumps(tiles_data)
     
     html_code = f"""
@@ -350,5 +306,4 @@ with col_display:
 # ---------------------------------------------------------
 # Footer
 # ---------------------------------------------------------
-footer_text = txt["footer"]
-st.markdown(f'<div class="footer">{footer_text}</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="footer">{txt["footer"]}</div>', unsafe_allow_html=True)
