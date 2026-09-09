@@ -35,7 +35,7 @@ with col_btn:
             st.rerun()
 
 # ---------------------------------------------------------
-# Translations Dictionary
+# Translations & Region Colors Dictionary
 # ---------------------------------------------------------
 T = {
     'ar': {
@@ -304,23 +304,25 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# Region Options & Voice Input (Fixed Key Mapping)
+# Dynamic Region Selection & Color Binding Fix
 # ---------------------------------------------------------
 regions = txt['regions']
 region_keys = list(regions.keys())
-region_options_display = [regions[k]["name"] for k in region_keys]
 
-selected_display = st.selectbox(txt['select_region'], region_options_display)
+selected_key = st.selectbox(
+    txt['select_region'], 
+    options=region_keys, 
+    format_func=lambda k: regions[k]["name"]
+)
 
-# Find corresponding key
-selected_key = region_keys[region_options_display.index(selected_display)]
 region_data = regions[selected_key]
+active_color = region_data["color"]
 
 st.markdown(
     f"""
-    <div style="background: rgba(11, 61, 46, 0.25); border: 1px solid {region_data["color"]}77; border-radius: 16px; padding: 20px; max-width: 850px; margin: 0 auto 20px auto; text-align: center;">
-        <div class="small-label" style="color:{region_data["color"]}; font-weight:800;">{region_data["name"]}</div>
-        <h3 style="font-family:'Tajawal', sans-serif; font-weight:700; color:{region_data["color"]}; margin:6px 0 8px 0; font-size:20px;">{region_data["heritage"]}</h3>
+    <div style="background: rgba(11, 61, 46, 0.25); border: 2px solid {active_color}; border-radius: 16px; padding: 20px; max-width: 850px; margin: 0 auto 20px auto; text-align: center; box-shadow: 0 0 15px {active_color}33;">
+        <div class="small-label" style="color:{active_color}; font-weight:800;">{region_data["name"]}</div>
+        <h3 style="font-family:'Tajawal', sans-serif; font-weight:700; color:{active_color}; margin:6px 0 8px 0; font-size:20px;">{region_data["heritage"]}</h3>
         <p style="color:#A3C9BC; font-size:14px; margin:0; font-weight:400;">{region_data["description"]}</p>
     </div>
     """,
@@ -364,7 +366,7 @@ if audio_file is not None:
             new_tile = {
                 "id": f"SPECTRUM-{len(st.session_state.museum_tiles)+1:03d}",
                 "region": region_data["name"],
-                "color": region_data["color"],
+                "color": active_color,
                 "energy": round(avg_energy, 3),
                 "freq": int(avg_frequency),
                 "bpm": int(tempo_val),
@@ -452,8 +454,8 @@ mosaic_component = f"""
         border: 1px dashed rgba(44, 168, 128, 0.12);
     }}
     .tile.active {{
-        background-color: var(--tile-color);
-        box-shadow: 0 0 10px var(--tile-color);
+        background-color: var(--tile-color) !important;
+        box-shadow: 0 0 10px var(--tile-color) !important;
         animation: wavePulse var(--wave-speed) infinite ease-in-out;
         cursor: pointer;
     }}
