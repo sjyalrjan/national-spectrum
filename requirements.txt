@@ -2,3 +2,4 @@ streamlit
 numpy
 librosa
 streamlit-mic-recorder
+supabase
