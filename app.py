@@ -46,6 +46,10 @@ T = {
         'select_region': 'اختر منطقتك',
         'give_voice': 'أهدِ صوتك للمتحف',
         'audio_upload': 'إدخال الصوت',
+        'input_mode_label': 'طريقة الإدخال',
+        'record_option': 'سجّل صوتك الآن',
+        'upload_option': 'ارفع ملف صوتي',
+        'record_prompt': 'اضغط للتسجيل',
         'dna_title': 'الخصائص الصوتية للبصمة',
         'freq': 'التردد',
         'energy': 'الطاقة',
@@ -90,6 +94,10 @@ T = {
         'select_region': 'Choose your region',
         'give_voice': 'Give the museum your voice',
         'audio_upload': 'Voice input',
+        'input_mode_label': 'Input method',
+        'record_option': 'Record now',
+        'upload_option': 'Upload a file',
+        'record_prompt': 'Tap to record',
         'dna_title': 'Your Voice Acoustic Profile',
         'freq': 'Frequency',
         'energy': 'Energy',
@@ -307,6 +315,17 @@ st.markdown(f"""
         line-height: 1.8;
     }}
 
+    /* Record / Upload mode selector styling */
+    div[data-testid="stRadio"] label {{
+        color: #92B5A8 !important;
+        font-family: 'Tajawal', 'Plus Jakarta Sans', sans-serif !important;
+    }}
+
+    div[data-testid="stRadio"] > div {{
+        justify-content: center;
+        gap: 20px;
+    }}
+
     /* Responsive tweaks for smaller screens */
     @media (max-width: 640px) {{
         .hero-title {{ font-size: 34px; }}
@@ -381,7 +400,27 @@ st.markdown(
 
 st.markdown(f'<div class="section-title">{txt["give_voice"]}</div>', unsafe_allow_html=True)
 
-audio_file = st.file_uploader(txt['audio_upload'], type=["wav", "mp3", "m4a"], label_visibility="collapsed")
+input_mode = st.radio(
+    txt['input_mode_label'],
+    options=["record", "upload"],
+    format_func=lambda k: txt['record_option'] if k == "record" else txt['upload_option'],
+    horizontal=True,
+    label_visibility="collapsed"
+)
+
+audio_file = None
+audio_filename = "recording.wav"
+
+if input_mode == "record":
+    recorded = st.audio_input(txt['record_prompt'], label_visibility="collapsed")
+    if recorded is not None:
+        audio_file = recorded
+        audio_filename = "recording.wav"
+else:
+    uploaded = st.file_uploader(txt['audio_upload'], type=["wav", "mp3", "m4a"], label_visibility="collapsed")
+    if uploaded is not None:
+        audio_file = uploaded
+        audio_filename = uploaded.name
 
 if audio_file is not None:
     audio_bytes = audio_file.getvalue()
@@ -412,7 +451,7 @@ if audio_file is not None:
 
         if st.button(txt['add_btn'], use_container_width=True):
             tile_id = f"SPECTRUM-{uuid.uuid4().hex[:8].upper()}"
-            audio_url = save_audio_file(audio_bytes, tile_id, audio_file.name)
+            audio_url = save_audio_file(audio_bytes, tile_id, audio_filename)
 
             new_tile = {
                 "tile_id": tile_id,
