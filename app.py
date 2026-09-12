@@ -1,12 +1,11 @@
 import streamlit as st
 import numpy as np
 import librosa
-import json
 import os
-import base64
 import uuid
 import streamlit.components.v1 as components
 from datetime import datetime
+from supabase import create_client, Client
 
 # ---------------------------------------------------------
 # Page Configuration & Styling
@@ -15,6 +14,16 @@ st.set_page_config(
     page_title="National Spectrum Mosaic",
     layout="wide"
 )
+
+# ---------------------------------------------------------
+# Supabase Connection (persistent storage + database)
+# ---------------------------------------------------------
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
+SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+BUCKET_NAME = "museum-audio"
+TABLE_NAME = "tiles"
 
 # ---------------------------------------------------------
 # Language State Management
@@ -120,63 +129,38 @@ txt = T[st.session_state.lang]
 is_rtl = st.session_state.lang == 'ar'
 
 # ---------------------------------------------------------
-# Storage Paths (audio kept as real files, JSON stays tiny)
+# Supabase helpers: database (tiles table) + storage (audio files)
 # ---------------------------------------------------------
-DATA_FILE = "museum_mosaic_data.json"
-AUDIO_DIR = "museum_audio"
-os.makedirs(AUDIO_DIR, exist_ok=True)
-
-
 def load_archive():
-    if os.path.exists(DATA_FILE):
-        try:
-            with open(DATA_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception:
-            return []
-    return []
-
-
-def save_to_archive(entry):
-    """Append a lightweight JSON record (no audio bytes) using a simple
-    read-modify-write with a lock file to reduce concurrent-write clashes."""
-    lock_path = DATA_FILE + ".lock"
-    # Best-effort lock: wait briefly if another write is in progress.
-    for _ in range(20):
-        if not os.path.exists(lock_path):
-            break
-        import time
-        time.sleep(0.05)
+    """Fetch all tiles from the Supabase 'tiles' table, oldest first."""
     try:
-        open(lock_path, "w").close()
-        archive = load_archive()
-        archive.append(entry)
-        with open(DATA_FILE, "w", encoding="utf-8") as f:
-            json.dump(archive, f, ensure_ascii=False, indent=2)
-    finally:
-        if os.path.exists(lock_path):
-            os.remove(lock_path)
+        response = supabase.table(TABLE_NAME).select("*").order("id").execute()
+        return response.data or []
+    except Exception:
+        return []
 
 
 def save_audio_file(audio_bytes, tile_id, original_filename):
-    """Persist the uploaded audio as its own file instead of embedding
-    base64 inside the JSON archive (keeps the archive small and fast)."""
+    """Upload the audio file to Supabase Storage and return its public URL.
+    This makes the audio persist permanently, independent of the app's
+    ephemeral container storage."""
     ext = os.path.splitext(original_filename)[1].lower() or ".wav"
-    safe_name = f"{tile_id}{ext}"
-    path = os.path.join(AUDIO_DIR, safe_name)
-    with open(path, "wb") as f:
-        f.write(audio_bytes)
-    return path
+    storage_path = f"{tile_id}{ext}"
+    content_type_map = {".wav": "audio/wav", ".mp3": "audio/mpeg", ".m4a": "audio/mp4"}
+    content_type = content_type_map.get(ext, "audio/wav")
+
+    supabase.storage.from_(BUCKET_NAME).upload(
+        storage_path,
+        audio_bytes,
+        {"content-type": content_type}
+    )
+    public_url = supabase.storage.from_(BUCKET_NAME).get_public_url(storage_path)
+    return public_url
 
 
-def audio_file_to_b64(path):
-    """Read an audio file from disk and base64-encode it only at render
-    time, just for embedding inside the isolated mosaic iframe."""
-    try:
-        with open(path, "rb") as f:
-            return base64.b64encode(f.read()).decode("utf-8")
-    except Exception:
-        return ""
+def save_to_archive(entry):
+    """Insert a new tile record into the Supabase 'tiles' table."""
+    supabase.table(TABLE_NAME).insert(entry).execute()
 
 
 if "museum_tiles" not in st.session_state:
@@ -428,20 +412,20 @@ if audio_file is not None:
 
         if st.button(txt['add_btn'], use_container_width=True):
             tile_id = f"SPECTRUM-{uuid.uuid4().hex[:8].upper()}"
-            audio_path = save_audio_file(audio_bytes, tile_id, audio_file.name)
+            audio_url = save_audio_file(audio_bytes, tile_id, audio_file.name)
 
             new_tile = {
-                "id": tile_id,
+                "tile_id": tile_id,
                 "region": region_data["name"],
                 "color": active_color,
                 "energy": round(avg_energy, 3),
                 "freq": int(avg_frequency),
                 "bpm": int(tempo_val),
-                "audio_path": audio_path,   # only a path is stored, not the bytes
+                "audio_path": audio_url,   # permanent public URL from Supabase Storage
                 "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M")
             }
-            st.session_state.museum_tiles.append(new_tile)
             save_to_archive(new_tile)
+            st.session_state.museum_tiles = load_archive()
             st.success(txt['success_msg'])
             st.rerun()
 
@@ -469,18 +453,15 @@ for i in range(total_slots):
         speed = max(0.9, 2.5 - (bpm / 120))
         glow_radius = int(8 + energy * 25)
 
-        # Audio bytes are read from disk and base64-encoded only here,
-        # at render time, for embedding inside the isolated iframe.
-        audio_path = t.get("audio_path", "")
-        audio_b64 = audio_file_to_b64(audio_path) if audio_path else t.get("audio_b64", "")
-        ext = os.path.splitext(audio_path)[1].replace(".", "") or "wav"
-        audio_src = f"data:audio/{ext};base64,{audio_b64}" if audio_b64 else ""
+        # audio_path is already a permanent public URL from Supabase Storage
+        audio_src = t.get("audio_path", "")
+        tile_id = t.get("tile_id", "")
 
         tiles_html_list.append(f"""
         <div class="tile active"
              style="--tile-color: {t['color']}; --wave-scale: {scale:.2f}; --wave-speed: {speed:.2f}s; --glow-radius: {glow_radius}px;"
-             onclick="playTileAudio('{t['id']}', '{audio_src}', this)"
-             title="{t['id']} • {t['region']}&#10;{txt['freq']}: {t['freq']} Hz">
+             onclick="playTileAudio('{tile_id}', '{audio_src}', this)"
+             title="{tile_id} • {t['region']}&#10;{txt['freq']}: {t['freq']} Hz">
         </div>
         """)
     else:
